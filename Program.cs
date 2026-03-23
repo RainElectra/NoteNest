@@ -35,7 +35,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-app.UseAuthentication(); // 🔹 обов'язково
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllers();
