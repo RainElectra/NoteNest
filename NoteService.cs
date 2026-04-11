@@ -68,6 +68,7 @@ public class NoteService
         note.IsDone = dto.isDone;
         note.Date = DateOnly.ParseExact(dto.Date, "yyyy-MM-dd");
 
+        _context.Notes.Update(note);
         _context.SaveChanges();
 
         return note;

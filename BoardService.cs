@@ -39,6 +39,7 @@ public class BoardService
 
         board.Name = newName;
 
+        _context.Boards.Update(board);
         _context.SaveChanges();
         return board;
     }
