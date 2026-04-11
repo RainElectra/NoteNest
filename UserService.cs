@@ -1,42 +1,59 @@
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 public class UserService
 {
-    private int _nextId = 1;
-    public readonly List<User> _users = new();
+    private readonly AppDbContext _context;
 
+    public UserService(AppDbContext context)
+    {
+        _context = context;
+    }
     public User Register(string username, string password)
     {
-        if (_users.Any(e => e.username == username))
-        {
-            throw new Exception("This user already exists");
-        }
+        var exists = _context.Users.Any(u => u.username == username);
+        if (exists)
+            throw new Exception("User already exists");
+
         var hash = BCrypt.Net.BCrypt.HashPassword(password);
+
         var user = new User
         {
-            id = _nextId++,
             username = username,
             password = hash
         };
-        _users.Add(user);
+
+        _context.Users.Add(user);
+        _context.SaveChanges();
+
         return user;
     }
     public User? Login(string username, string password)
     {
-        var user = _users.FirstOrDefault(e => e.username == username);
+        var user = _context.Users
+            .AsNoTracking() 
+            .FirstOrDefault(u => u.username == username);
+
         if (user == null)
-        {
             return null;
-        }
-        bool ok = BCrypt.Net.BCrypt.Verify(password, user.password);
-        if (!ok)
-        {
+
+        var isValid = BCrypt.Net.BCrypt.Verify(password, user.password);
+        if (!isValid)
             return null;
-        }
+
         return user;
     }
     public User? GetById(int id)
     {
-        return _users.FirstOrDefault(e => e.id == id);
+            return _context.Users
+                .Include(u => u.Boards!)
+                    .ThenInclude(b => b.Columns!)
+                        .ThenInclude(c => c.Notes!)
+                .FirstOrDefault(u => u.id == id);
+    }
+    public User? GetByIdLight(int id)
+    {
+        return _context.Users
+            .AsNoTracking()
+            .FirstOrDefault(u => u.id == id);
     }
 }

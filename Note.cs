@@ -1,8 +1,11 @@
 public class Note
 {
-    public int id { get; set; }
-    public required string name { get; set; }
-    public string? content { get; set; }
-    public required bool isDone { get; set; }
-    public DateOnly date { get; set; }
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public string? Content { get; set; }
+    public bool IsDone { get; set; }
+    public DateOnly Date { get; set; }
+
+    public int ColumnId { get; set; } 
+    public Column? Column { get; set; }
 }

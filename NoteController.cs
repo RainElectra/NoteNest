@@ -15,35 +15,50 @@ public class NoteController : ControllerBase
         _userService = userService;
     }
     [Authorize]
-    [HttpGet]
-    public IActionResult GetNotes()
+    [HttpGet("boards/{boardId}/columns/{columnId}")]
+    public IActionResult GetNotesForColumn(int boardId, int columnId)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = _userService.GetById(userId)!;
-        return Ok(_noteService.GetAllNotes(user));
+        return Ok(_noteService.GetAllNotes(userId, boardId, columnId));
     }
     [Authorize]
-    [HttpPost]
-    public IActionResult CreateNote(NoteDto dto)
-    {   
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = _userService.GetById(userId)!;
-        return Ok(_noteService.CreateNote(user, dto));
-    }
-    [Authorize]
-    [HttpPut("{id}")]
-    public IActionResult UpdateNote(int id, UpdatedNoteDto dto)
+    [HttpPost("boards/{boardId}/columns/{columnId}")]
+    public IActionResult CreateNote(int boardId, int columnId, [FromBody] NoteDto dto)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = _userService.GetById(userId)!;
-        return Ok(_noteService.UpdateNote(id, dto, user));
+        var note = _noteService.CreateNote(userId, boardId, columnId, dto);
+
+        return Ok(new
+        {
+            note.Id,
+            note.Name,
+            note.Content,
+            note.IsDone,
+            note.Date,
+            note.ColumnId
+        });
     }
     [Authorize]
-    [HttpDelete("{id}")]
-    public IActionResult DeleteNote(int id)
+    [HttpPut("boards/{boardId}/columns/{columnId}/notes/{noteId}")]
+    public IActionResult UpdateNote(int boardId, int columnId, int noteId, [FromBody] UpdatedNoteDto dto)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = _userService.GetById(userId)!;
-        return Ok(_noteService.DeleteNote(id, user));
+        return Ok(_noteService.UpdateNote(userId, boardId, columnId, noteId, dto));
+    }
+    [Authorize]
+    [HttpDelete("boards/{boardId}/columns/{columnId}/notes/{noteId}")]
+    public IActionResult DeleteNote(int boardId, int columnId, int noteId)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        _noteService.DeleteNote(userId, boardId, columnId, noteId);
+        return Ok();
+    }
+    [Authorize]
+    [HttpPost("boards/{boardId}/columns/{columnId}/notes/{noteId}/move/{targetColumnId}")]
+    public IActionResult MoveNote(int boardId, int columnId, int noteId, int targetColumnId)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        _noteService.MoveNote(userId, boardId, columnId, noteId, targetColumnId);
+        return Ok();
     }
 }

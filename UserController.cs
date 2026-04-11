@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -44,7 +45,7 @@ public class UserController : ControllerBase
                 new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
                 new Claim(ClaimTypes.Name, user.username)
             }),
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.AddDays(15),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)
@@ -53,9 +54,10 @@ public class UserController : ControllerBase
         var jwt = tokenHandler.WriteToken(token);
         return Ok(new {token = jwt});
     }
+    [Authorize]
     [HttpGet("users/{id}")]
     public IActionResult GetById(int id)
-    {
+    {   
         return Ok(_service.GetById(id));
     }
 }
