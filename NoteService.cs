@@ -107,6 +107,7 @@ public class NoteService
 
         note.ColumnId = targetColumnId;
 
+        _context.Notes.Update(note);
         _context.SaveChanges();
     }
 }
