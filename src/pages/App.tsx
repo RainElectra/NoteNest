@@ -14,7 +14,7 @@ const getWorkspaces = async (): Promise<Workspace[]> => {
     },
   });
   return await response.json();
-}; 
+};
 
 function App() {
   const [activeWork, setActiveWork] = useState<Workspace | null>(null);
