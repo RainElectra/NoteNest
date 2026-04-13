@@ -16,7 +16,6 @@ export default function NoteModal({ note, boardId, columnId, onClose, onRefresh 
   const [editContent, setEditContent] = useState(note.content);
   const [localIsDone, setLocalIsDone] = useState(note.isDone);
   const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzIiwidW5pcXVlX25hbWUiOiJkZWx1cmVkMWFkbWluIiwibmJmIjoxNzc1OTgwNjY1LCJleHAiOjE3NzcyNzY2NjUsImlhdCI6MTc3NTk4MDY2NX0.hpIM0kEQSRVekkH_IuXkPC-v03Z6l02EMG1_E0jGKzg";
-
   const toggleDone = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.checked;
     setLocalIsDone(newValue);
@@ -24,13 +23,13 @@ export default function NoteModal({ note, boardId, columnId, onClose, onRefresh 
     try {
       const response = await fetch(`https://notenest-22y7.onrender.com/api/Note/boards/${boardId}/columns/${columnId}/notes/${note.id}`, {
         method: "PUT",
-        headers: { 
-          "Authorization": `Bearer ${token}`, 
-          "Content-Type": "application/json" 
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          name: note.name,
-          content: note.content,
+          name: editName,   
+          content: editContent,
           isDone: newValue,
           date: note.date,
           columnId: columnId
@@ -38,7 +37,7 @@ export default function NoteModal({ note, boardId, columnId, onClose, onRefresh 
       });
 
       if (response.ok) {
-        onRefresh(); 
+        onRefresh();
       } else {
         setLocalIsDone(!newValue);
         alert("Помилка при збереженні стану");
@@ -58,7 +57,7 @@ export default function NoteModal({ note, boardId, columnId, onClose, onRefresh 
       body: JSON.stringify({
         name: editName,
         content: editContent,
-        isDone: note.isDone,
+        isDone: localIsDone,
         date: note.date,
       })
     });
@@ -91,19 +90,25 @@ export default function NoteModal({ note, boardId, columnId, onClose, onRefresh 
           </div>
         ) : (
           <div className="view-mode">
-            <h2>{note.name}</h2>
-            <input
-              id="modal-checkbox"
-              type="checkbox"
-              checked={localIsDone}
-              onChange={toggleDone}
-            />
+            <div className="modal-header">
+              <h2>{note.name}</h2>
+              <input
+                id="modal-checkbox"
+                type="checkbox"
+                checked={localIsDone}
+                onChange={toggleDone}
+                className="custom-checkbox"
+              />
+            </div>
             <div className="markdown-body">
               <ReactMarkdown>{note.content || "*No content yet. Click Edit to add something!*"}</ReactMarkdown>
             </div>
-            <div>
+            <div className="note-bottom">
+              <div>
               <button onClick={() => setIsEditing(true)}>Edit</button>
               <button onClick={onClose}>Close</button>
+              </div>
+              <p>{note.date}</p>
             </div>
           </div>
         )}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Column, Note } from "../types/types";
 import NoteComponent from "./Note";
 
@@ -9,31 +10,40 @@ interface Props {
 }
 
 export default function ColumnComponent({ column, boardId, onRefresh, onNoteClick }: Props) {
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [noteName, setNoteName] = useState("");
+  const [noteContent, setNoteContent] = useState("");
   const BASE_URL = "https://notenest-22y7.onrender.com";
   const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzIiwidW5pcXVlX25hbWUiOiJkZWx1cmVkMWFkbWluIiwibmJmIjoxNzc1OTgwNjY1LCJleHAiOjE3NzcyNzY2NjUsImlhdCI6MTc3NTk4MDY2NX0.hpIM0kEQSRVekkH_IuXkPC-v03Z6l02EMG1_E0jGKzg";
 
   const addNote = async () => {
-    const name = prompt("Enter note name:");
-    if (!name) return;
-
     try {
-      const res = await fetch(`${BASE_URL}/api/Note/boards/${boardId}/columns/${column.id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: name,
-          content: "",
-          isDone: false,
-          date: new Date().toISOString().split('T')[0],
-          columnId: column.id
-        })
-      });
-      if (res.ok) onRefresh();
+      const res = await fetch(
+        `${BASE_URL}/api/Note/boards/${boardId}/columns/${column.id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: noteName,
+            content: noteContent,
+            isDone: false,
+            date: new Date().toISOString().split("T")[0],
+            columnId: column.id,
+          }),
+        }
+      );
+
+      if (res.ok) {
+        setIsCreateOpen(false);
+        setNoteName("");
+        setNoteContent("");
+        onRefresh();
+      }
     } catch (err) {
-      console.error("Add note error:", err);
+      console.error("Create note error:", err);
     }
   };
 
@@ -111,9 +121,36 @@ export default function ColumnComponent({ column, boardId, onRefresh, onNoteClic
         ))}
       </div>
 
-      <button onClick={addNote}>
+      <button onClick={() => setIsCreateOpen(true)}>
         + Add a card
       </button>
+      {isCreateOpen && (
+        <div className="modal-backdrop" onClick={() => setIsCreateOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+
+            <h3>Create Note</h3>
+
+            <input
+              placeholder="Note title"
+              value={noteName}
+              onChange={(e) => setNoteName(e.target.value)}
+            />
+
+            <textarea
+              placeholder="Markdown content..."
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              rows={6}
+            />
+
+            <div style={{ marginTop: 10 }}>
+              <button onClick={addNote}>Save</button>
+              <button onClick={() => setIsCreateOpen(false)}>Cancel</button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
