@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import type { Note } from "../types/types";
+import { authService } from "../services/auth";
 
 interface Props {
   note: Note;
@@ -15,7 +16,7 @@ export default function NoteModal({ note, boardId, columnId, onClose, onRefresh 
   const [editName, setEditName] = useState(note.name);
   const [editContent, setEditContent] = useState(note.content);
   const [localIsDone, setLocalIsDone] = useState(note.isDone);
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzIiwidW5pcXVlX25hbWUiOiJkZWx1cmVkMWFkbWluIiwibmJmIjoxNzc1OTgwNjY1LCJleHAiOjE3NzcyNzY2NjUsImlhdCI6MTc3NTk4MDY2NX0.hpIM0kEQSRVekkH_IuXkPC-v03Z6l02EMG1_E0jGKzg";
+  const token = authService.getToken();
   const toggleDone = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.checked;
     setLocalIsDone(newValue);

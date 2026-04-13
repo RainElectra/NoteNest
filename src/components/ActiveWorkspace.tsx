@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { Workspace, Note, Column } from "../types/types";
 import ColumnComponent from "./Column";
 import NoteModal from "./NoteModal";
+import { authService } from "../services/auth";
 
 interface Props {
     workspace: Workspace;
@@ -15,7 +16,7 @@ export default function ActiveWorkspace({ workspace, onRefresh }: Props) {
     const [columns, setColumns] = useState<Column[]>([]);
     const [isCreateColumnOpen, setIsCreateColumnOpen] = useState(false);
     const [columnName, setColumnName] = useState("");
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzIiwidW5pcXVlX25hbWUiOiJkZWx1cmVkMWFkbWluIiwibmJmIjoxNzc1OTgwNjY1LCJleHAiOjE3NzcyNzY2NjUsImlhdCI6MTc3NTk4MDY2NX0.hpIM0kEQSRVekkH_IuXkPC-v03Z6l02EMG1_E0jGKzg";
+    const token = authService.getToken();
 
     const loadColumns = async () => {
         try {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Column, Note } from "../types/types";
 import NoteComponent from "./Note";
+import { authService } from "../services/auth";
 
 interface Props {
   column: Column;
@@ -14,7 +15,7 @@ export default function ColumnComponent({ column, boardId, onRefresh, onNoteClic
   const [noteName, setNoteName] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const BASE_URL = "https://notenest-22y7.onrender.com";
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzIiwidW5pcXVlX25hbWUiOiJkZWx1cmVkMWFkbWluIiwibmJmIjoxNzc1OTgwNjY1LCJleHAiOjE3NzcyNzY2NjUsImlhdCI6MTc3NTk4MDY2NX0.hpIM0kEQSRVekkH_IuXkPC-v03Z6l02EMG1_E0jGKzg";
+  const token = authService.getToken();
 
   const addNote = async () => {
     try {

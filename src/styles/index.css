@@ -25,7 +25,11 @@ body {
   background-color: var(--bg-color);
   color: var(--text-main);
 }
-
+.main-layout,
+.content,
+.active-workspace {
+  background-color: transparent !important;
+}
 .main-layout {
   height: 100vh;
   display: flex;
@@ -40,9 +44,16 @@ body {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 20px;
 }
-
+.creds p,
+.creds a {
+  color: #ffffff;
+}
+.creds a {
+  font-weight: 600;
+}
 .create-work button {
   width: 100%;
   padding: 10px;
@@ -329,6 +340,7 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  border-radius: 25px;
 }
 
 .modal-content,
@@ -532,7 +544,8 @@ button[onClick*="handleDelete"]:hover {
   font-weight: 600;
   color: #4b5563;
   text-align: center;
-
+  background-color: #fff;
+  border-radius: 10px;
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -644,22 +657,27 @@ button[onClick*="handleDelete"]:hover {
 .modal-actions button:hover {
   opacity: 0.8;
 }
-.modal-content, .modal button {
+.modal-content,
+.modal button {
   transition: all 0.15s ease;
 }
-.modal-content, .modal button:hover {
+.modal-content,
+.modal button:hover {
   transform: translateY(-1px);
 }
-.modal-content, .modal button:active {
+.modal-content,
+.modal button:active {
   transform: translateY(0px) scale(0.98);
 }
-.modal-content, .modal {
+.modal-content,
+.modal {
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
 }
 .modal-backdrop {
   cursor: pointer;
 }
-.modal-content, .modal {
+.modal-content,
+.modal {
   cursor: default;
 }
 .modal h3 {
@@ -695,6 +713,34 @@ button[onClick*="handleDelete"]:hover {
   justify-content: space-between;
   align-items: center;
   margin-right: 10px;
+}
+.scroll {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200vw;
+  height: 200vh;
+  z-index: -1;
+  overflow: hidden;
+  background-color: #f0f2f5;
+  display: flex;
+}
+
+.bg-pattern {
+  width: 200%;
+  height: 200%;
+  background-image: url("/bg.png");
+  background-size: 1000px 1000px;
+  background-repeat: repeat;
+}
+.active-workspace {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  min-height: 100vh;
+  padding: 20px;
+  border-radius: 25px;
 }
 @media (max-width: 1024px) {
   .sidebar {

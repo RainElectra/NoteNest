@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import type { Workspace, Column } from "../types/types";
+import { authService } from "../services/auth";
 
 interface Props {
     onSelect?: (workspace: Workspace) => void;
+    onDelete?: (id: number) => void;
 }
 
-export default function Workspaces({ onSelect }: Props) {
+export default function Workspaces({ onSelect, onDelete }: Props) {
     const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [newWorkName, setNewWorkName] = useState("");
@@ -15,7 +17,7 @@ export default function Workspaces({ onSelect }: Props) {
     const [renameValue, setRenameValue] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzIiwidW5pcXVlX25hbWUiOiJkZWx1cmVkMWFkbWluIiwibmJmIjoxNzc1OTgwNjY1LCJleHAiOjE3NzcyNzY2NjUsImlhdCI6MTc3NTk4MDY2NX0.hpIM0kEQSRVekkH_IuXkPC-v03Z6l02EMG1_E0jGKzg"
+    const token = authService.getToken();
     const getWorkspaces = async () => {
         try {
             setLoading(true);
@@ -60,7 +62,7 @@ export default function Workspaces({ onSelect }: Props) {
 
             setWorkspaces(workspacesWithData);
         } catch {
-            setError("Server is waking up... please wait");
+            setError("Server is loading... please wait");
         } finally {
             setLoading(false);
         }
@@ -115,6 +117,7 @@ export default function Workspaces({ onSelect }: Props) {
     const handleDeleteWork = async (id: number) => {
         await deleteWorkspace(id);
         await getWorkspaces();
+        onDelete?.(id);
     }
     const handleCreateWork = async () => {
         await postWorkspace(newWorkName);
@@ -146,7 +149,7 @@ export default function Workspaces({ onSelect }: Props) {
     if (loading) {
         return (
             <div className="loading-screen">
-                <p> Server is waking up...</p>
+                <p> Server is loading...</p>
             </div>
         );
     }
@@ -167,7 +170,7 @@ export default function Workspaces({ onSelect }: Props) {
             <div className="list-workspace">
                 {workspaces.map((workspace: Workspace) => (
                     <div key={workspace.id} className="workspace-item">
-                        <p onClick={() => onSelect?.(workspace)}>{truncateContent(workspace.name, 23)}</p>
+                        <p onClick={() => onSelect?.(workspace)}>{truncateContent(workspace.name, 19)}</p>
 
                         <button onClick={() => {
                             setOpenMenuId(workspace.id ? workspace.id : 0)

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Note } from "../types/types";
+import { authService } from "../services/auth";
 
 interface Props {
   note: Note;
@@ -17,7 +18,7 @@ export default function NoteComponent({ note, boardId, columnId, onRefresh, onCl
     e.dataTransfer.setData('text/plain', JSON.stringify({ id: note.id, columnId: columnId }));
   };
 
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzIiwidW5pcXVlX25hbWUiOiJkZWx1cmVkMWFkbWluIiwibmJmIjoxNzc1OTgwNjY1LCJleHAiOjE3NzcyNzY2NjUsImlhdCI6MTc3NTk4MDY2NX0.hpIM0kEQSRVekkH_IuXkPC-v03Z6l02EMG1_E0jGKzg";
+  const token = authService.getToken();
 
   const toggleDone = async (e: React.MouseEvent | React.ChangeEvent) => {
     e.stopPropagation();
